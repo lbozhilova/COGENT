@@ -14,7 +14,7 @@ to TRUE if this is not done automatically.}
 }
 \value{
 The result is a list of similarity measures of the two networks with
-  adjacency matrices described by \code{A}. This includes:
+  adjacency matrices in \code{A}. This includes:
   \itemize{
   \item \code{nodeCount} The number of non-isolated genes across the two
   networks.

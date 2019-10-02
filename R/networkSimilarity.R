@@ -13,7 +13,7 @@
 #'   to TRUE if this is not done automatically.
 #'
 #' @return The result is a list of similarity measures of the two networks with
-#'   adjacency matrices described by \code{A}. This includes:
+#'   adjacency matrices in \code{A}. This includes:
 #'   \itemize{
 #'   \item \code{nodeCount} The number of non-isolated genes across the two
 #'   networks.
@@ -74,7 +74,7 @@ getEdgeSimilarity <- function(A, align=FALSE){
 #' Get the node similarity of two networks
 #'
 #' \code{getNodeSimilarity()} compares two node metric vectors in one of three
-#' ways: via correlation coefficient, rank k-similarity or Euclidean distance.
+#' ways: via a correlation coefficient, rank k-similarity or Euclidean distance.
 #'
 #' @param D  A list of two (named) numeric arrays.
 #' @param mode Which measure to use for the comparison; one of "cor", "ksim", or
@@ -130,7 +130,7 @@ getNodeSimilarity <- function(D, mode=c("cor", "ksim", "L2"), align=FALSE, ...){
   return(nodeSimilarity)
 }
 
-#' Edge the edge similarity of two networks with configuration model correction
+#' Get the edge similarity of two networks with configuration model correction
 #'
 #' Edge similarity as defined in \link{getEdgeSimilarity} is not corrected for
 #' the density of the two networks. This means denser networks are more likely
@@ -146,8 +146,10 @@ getNodeSimilarity <- function(D, mode=c("cor", "ksim", "L2"), align=FALSE, ...){
 #'   from the configuartion model or by using expectations. Must be one of
 #'   "random" or "expected".
 #'
-#' @return The result is a list of two elements: \itemize{ \item
-#'   \code{nodeCount} The number of non-isolated genes across the two networks.
+#' @return The result is a list of two elements:
+#'   \itemize{
+#'   \item \code{nodeCount} The number of non-isolated genes across the two
+#'   networks.
 #'   \item \code{correctedSimilarity} The weighted Jaccard index of the edge
 #'   sets of the two networks, corrected using the generated configuration model
 #'   networks. } The corrected similarity corresponds to the global similarity

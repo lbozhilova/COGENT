@@ -32,7 +32,7 @@ The node metric similarity for the two arrays. In the case of
 }
 \description{
 \code{getNodeSimilarity()} compares two node metric vectors in one of three
-ways: via correlation coefficient, rank k-similarity or Euclidean distance.
+ways: via a correlation coefficient, rank k-similarity or Euclidean distance.
 }
 \examples{
 # Generate two node metric vectors

@@ -24,7 +24,7 @@ Defaults to NULL.}
 
 \item{threadCount}{Number of threads to use.}
 
-\item{propShared}{Proportion of samples (from the whole \code{df}) to be
+\item{propShared}{Proportion of samples (from the input \code{df}) to be
 shared across the two random split.}
 
 \item{align}{Logical; Whether to align the two outputs of \code{netwkFun}.

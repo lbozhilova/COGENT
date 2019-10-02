@@ -2,7 +2,7 @@
 % Please edit documentation in R/networkSimilarity.R
 \name{getEdgeSimilarityCorrected}
 \alias{getEdgeSimilarityCorrected}
-\title{Edge the edge similarity of two networks with configuration model correction}
+\title{Get the edge similarity of two networks with configuration model correction}
 \usage{
 getEdgeSimilarityCorrected(A, align = FALSE, type = c("random",
   "expected"))
@@ -18,8 +18,10 @@ from the configuartion model or by using expectations. Must be one of
 "random" or "expected".}
 }
 \value{
-The result is a list of two elements: \itemize{ \item
-  \code{nodeCount} The number of non-isolated genes across the two networks.
+The result is a list of two elements:
+  \itemize{
+  \item \code{nodeCount} The number of non-isolated genes across the two
+  networks.
   \item \code{correctedSimilarity} The weighted Jaccard index of the edge
   sets of the two networks, corrected using the generated configuration model
   networks. } The corrected similarity corresponds to the global similarity

@@ -1,9 +1,9 @@
-#' COGENT: A package for evaluating the consistency of gene expression networks
+#' COGENT: A package for evaluating the Consistency of Gene Expression NeTworks
 #'
 #' In a gene expression network nodes represent genes and edges typically
-#' represent some similarity in gene expression across a number of samples.
-#' There exist many ways of constructing such networks. COGENT provides a suite
-#' of tools for assessing the consistency or stability of network construction
+#' represent similarity of gene expression across a number of samples. There
+#' exist many ways of constructing such networks. COGENT provides a suite of
+#' tools for assessing the consistency or stability of network construction
 #' methods.
 #'
 #' @section Subsetting the data:
@@ -18,9 +18,9 @@
 #'
 #' @section Network similarity:
 #'
-#'   Network similarity is primarily measured by a weighted or unweighted
-#'   Jaccard index between the edge sets of the two networks being compared. In
-#'   the case of binary networks, a density correction using networks generated
+#'   The similarity of two networks is primarily measured by a weighted or
+#'   unweighted Jaccard index between their edge sets. In the case of binary
+#'   (i.e. unweighted) networks, a density correction using networks generated
 #'   by a configuration model can be applied.
 #'
 #'   Networks may have significantly different topology, but still identify

@@ -15,7 +15,7 @@
 #'   adjacency matrix.
 #' @param nodeFun A function calculating node metrics from an adjacency matrix.
 #'   Defaults to NULL.
-#' @param propShared Proportion of samples (from the whole \code{df}) to be
+#' @param propShared Proportion of samples (from the input \code{df}) to be
 #'   shared across the two random split.
 #' @param align Logical; Whether to align the two outputs of \code{netwkFun}.
 #'   Only set to TRUE if \code{netwkFun()} doesn't preserve gene order.
