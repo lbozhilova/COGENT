@@ -1,0 +1,19 @@
+Package: COGENT
+Type: Package
+Title: Consistency of gene expression networks
+Version: 0.1.0
+Author: Lyuba V. Bozhilova
+Maintainer: Lyuba V. Bozhilova <lyubabozhilova@gmail.com>
+Description: Analysis of co-expression network construction algorithms.
+    Given some gene expression data, and a network construction strategy (e.g. 
+    thresholding Pearson correlations at 0.7), how stable is the result?
+License: BSD_3_clause + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    Matrix (>= 1.2.17),
+    parallel (>= 3.6.1),
+    igraph (>= 1.2.4.1)
+RoxygenNote: 6.1.1
+Suggests: 
+    testthat (>= 2.1.0)
