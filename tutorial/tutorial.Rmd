@@ -10,11 +10,11 @@ If two genes have similar expression patterns, i.e. if their products appear in 
 
 There are a number of ways such a network can be built from gene expression data across multiple samples. The easiest might be to calculate a Pearson correlation coefficient between every pair of genes, and then build edges where the correlations are high (say, above 0.70). Various choices of similarity metrics and thresholds are possible here, and there exist more complex network construction approaches. It is not always clear what the best choice is when it comes to network construction.
 
-`COGENT` stands for Consistency of Gene Expression NeTworks. It's an `R` package for assessing gene co-expression network construction. The main philosophy behind `COGENT` is that a good network construction function should produce similar networks when only a subset of the available gene expression samples are used. It can be used to help choose between different network construction functions, or to inform threshold choice.
+COGENT stands for Consistency of Gene Expression NeTworks. It's an `R` package for assessing gene co-expression network construction. The main philosophy behind COGENT is that a good network construction function should produce similar networks when only a subset of the available gene expression samples are used. It can be used to help choose between different network construction functions, or to inform threshold choice.
 
-This tutorial will start by describing the type of data and functions `COGENT` is designed to handle. You will then learn how you can use `COGENT` to choose between competing network construction methods, as well as how to set similarity score cut-offs.
+This tutorial will start by describing the type of data and functions COGENT is designed to handle. You will then learn how you can use COGENT to choose between competing network construction methods, as well as how to set similarity score cut-offs.
 
-But first thing's first. If you haven't already, make sure you have `COGENT` installed. The easiest way is through `devtools::install_github`, for which you may need to run `install.packages("devtools")` first. The script `installTutorialPackages.R` will check if you have `devtools` as well as a number of other packages installed, and will install them for you if they're missing. It will also install `COGENT` itself. Alternatively, you can run the following:
+But first thing's first. If you haven't already, make sure you have COGENT installed. The easiest way is through `devtools::install_github`, for which you may need to run `install.packages("devtools")` first. The script `installTutorialPackages.R` will check if you have `devtools` as well as a number of other packages installed, and will install them for you if they're missing. It will also install COGENT itself. Alternatively, you can run the following:
 ```{r}
 requiredPackages <- c("devtools",
                       "ggplot2",
@@ -29,18 +29,87 @@ if(!("COGENT" %in% installed.packages()[,"Package"])){
 }
 rm(notInstalled, requiredPackages); gc()
 ```
-Once you have everything installed, you just need to load it.
+Now we need to load necessary packages.
 
 ```{r}
 require("COGENT")
+require("ggplot2")
+require("ggthemes")
+require("igraph")
 ```
-
-Let's also load some other useful packages. 
-
-
+## Gene expression data
+For this tutorial we'll use the same mouse data as the [WGCNA tutorial](https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/Tutorials/index.html). A subset of the original dataset, filtered using `prepareTutorialData.R` is available in the same folder as this notebook. The data has been reduced to the set of 200 genes, expressed across 136 samples. These are stored in a data frame titled `liverData`.
 ```{r}
-plot(cars)
+load("tutorialData.RData")
+head(liverData[,1:10])
 ```
+COGENT assumes a standard way of formatting gene expression data. Data should be stored in an object of class `data.frame`, in which rows represent genes and columns represent samples. Row names are allowed but will be ignored. A column titled `Name` should contain gene names. These could be set to `NA` and will not be explicitly checked. All other columns should be numeric. If you don't know whether your data is COGENT-compatible, you can check it using `checkExpressionDF()`. This will either return `TRUE` or print an error message, which should hopefully give you a hint as to what the incompatibility is.
+```{r}
+checkExpressionDF(liverData)
+```
+## Network construction functions and network comparison
+For the purposes of COGENT, a network construction function is any function which maps a COGENT-compatible data frame to a network adjacency matrix. The networks can be weighted, but are assumed to be undirected. The weights, if present, should be non-negative.
+
+The easiest way to build a co-expression network is by calculating Pearson correlation coefficients and thresholding. Here is a simple function, which will take the top 10% of correlation coefficients.
+```{r}
+buildPcorNetwork <- function(df, quant=0.90){
+  check <- checkExpressionDF(df)
+  A <- cor(t(df[,colnames(df)!="Name"]), use="pairwise.complete.obs", method="pearson")
+  threshold <- quantile(A, quant)
+  A <- 1*(A>=threshold); diag(A) <- 0
+  colnames(A) <- rownames(A) <- df$Name
+  return(A)
+}
+pcorA <- buildPcorNetwork(liverData)
+```
+A competeing way of building networks might involve using Kendall correlations instead. 
+```{r}
+buildKcorNetwork <- function(df, quant=0.90){
+  check <- checkExpressionDF(df)
+  A <- cor(t(df[,colnames(df)!="Name"]), use="pairwise.complete.obs", method="kendall")
+  threshold <- quantile(A, quant)
+  A <- 1*(A>=threshold); diag(A) <- 0
+  colnames(A) <- rownames(A) <- df$Name
+  return(A)
+}
+kcorA <- buildKcorNetwork(liverData)
+```
+The first question to ask is whether the two are even different. The function `getEdgeSimilarity()` provides an overview of this. It returns three things: 
+
+  - `nodeCount`, the number of nodes which aren't isolated in at least one of the two networks, 
+  
+  - `globalSimilarity`, the (weighted) Jaccard index of the edge sets of the two networks, and 
+  
+  - `localSimilarity`, an array of the Jaccard indeces for each gene neighbourhood. 
+
+This means we can check both how well the networks overlap globally and what the agreement is for a particular set of genes of interest.
+```{r}
+pkEdgeComparison <- getEdgeSimilarity(list(pcorA, kcorA), align=FALSE)
+# How many non-isolated genes are there?
+pkEdgeComparison$nodeCount
+# What is the global similarity?
+pkEdgeComparison$globalSimilarity
+# What is the local similarity distribution over all genes?
+hist(pkEdgeComparison$localSimilarity,
+     main="Local similarity between Pearson and Kendall networks",
+     xlab="Similarity",
+     breaks=seq(0, 1, .05), col="cornflowerblue")
+```
+We can see that the networks agree quite well (their global similarity is around 0.84), and even though some genes exhibit quite different neighbourhoods (21 genes have local similarity below 0.60). So how do we know which is better to use: Pearson or Kendall?
+
+## COGENT analysis
+COGENT evaluates network consistency by repeatedly splitting the gene expression sampels in two, and builing a separate network from each sample subset. The more similar the networks are, the more consistent the network construction method is. To measure network similarity, COGENT uses `getEdgeSimilarity()`, as well as an optional sister function, `getNodeSimilarity()`. The latter measures similarity based on a node metric -- e.g. you can compare degree sequences, or betweenness centrality across two networks. The comparison itself can be done by rank k-similarity, a correlation coefficient, or by Euclidean distance. We demonstrate this all in one go. 
+
+First, we define a node metric function to use. Let us do something simple, such as degree. Note the node metric function should map from an adjacency matrix to an array. An example is this degree function.
+```{r}
+calculateDegrees <- function(A){
+  deg <- rowSums(A)
+  names(deg) <- colnames(A)
+  return(deg)
+}
+```
+
+===
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 
