@@ -1,0 +1,49 @@
+---
+title: "COGENT tutorial"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. It works like a Jupyter notebook -- you can either click *Run* on each code chunk, or *Ctrl+Shift+Enter* your way through.
+
+## Introduction
+If two genes have similar expression patterns, i.e. if their products appear in the cell at the same time, this makes them more likely to share a biological function. Such information is often captured by gene co-expression networks. In these, genes are represented by nodes, and high co-expression between genes is represented by edges.
+
+There are a number of ways such a network can be built from gene expression data across multiple samples. The easiest might be to calculate a Pearson correlation coefficient between every pair of genes, and then build edges where the correlations are high (say, above 0.70). Various choices of similarity metrics and thresholds are possible here, and there exist more complex network construction approaches. It is not always clear what the best choice is when it comes to network construction.
+
+`COGENT` stands for Consistency of Gene Expression NeTworks. It's an `R` package for assessing gene co-expression network construction. The main philosophy behind `COGENT` is that a good network construction function should produce similar networks when only a subset of the available gene expression samples are used. It can be used to help choose between different network construction functions, or to inform threshold choice.
+
+This tutorial will start by describing the type of data and functions `COGENT` is designed to handle. You will then learn how you can use `COGENT` to choose between competing network construction methods, as well as how to set similarity score cut-offs.
+
+But first thing's first. If you haven't already, make sure you have `COGENT` installed. The easiest way is through `devtools::install_github`, for which you may need to run `install.packages("devtools")` first. The script `installTutorialPackages.R` will check if you have `devtools` as well as a number of other packages installed, and will install them for you if they're missing. It will also install `COGENT` itself. Alternatively, you can run the following:
+```{r}
+requiredPackages <- c("devtools",
+                      "ggplot2",
+                      "ggthemes",
+                      "igraph")
+notInstalled <- setdiff(requiredPackages, installed.packages()[,"Package"])
+if (length(notInstalled) > 0)
+  install.packages(notInstalled)
+if(!("COGENT" %in% installed.packages()[,"Package"])){
+  require("devtools")
+  install_github("lbozhilova/COGENT")
+}
+rm(notInstalled, requiredPackages); gc()
+```
+Once you have everything installed, you just need to load it.
+
+```{r}
+require("COGENT")
+```
+
+Let's also load some other useful packages. 
+
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
