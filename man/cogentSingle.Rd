@@ -61,7 +61,7 @@ The result is a list of similarity measures of the two gene
   node metric vectors.
   \item \code{ksimSimilarity} The rank k-similarity between the two node
   metric vectors.
-  \item \code{L2Similarity }The Euclidean \emph{distance} between
+  \item \code{L2Distance}The Euclidean \emph{distance} between
   the two node metric vectors.
   }
 }

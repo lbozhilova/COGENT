@@ -50,7 +50,7 @@
 #'   node metric vectors.
 #'   \item \code{ksimSimilarity} The rank k-similarity between the two node
 #'   metric vectors.
-#'   \item \code{L2Similarity }The Euclidean \emph{distance} between
+#'   \item \code{L2Distance}The Euclidean \emph{distance} between
 #'   the two node metric vectors.
 #'   }
 #' @examples
@@ -99,8 +99,10 @@ cogentSingle <- function(df, netwkFun, nodeFun=NULL, propShared=0, align=FALSE, 
     nodeSimilarity$corSimilarity <- getNodeSimilarity(D, "cor", align, use, method)
   if ("ksim" %in% nodeModes)
     nodeSimilarity$ksimSimilarity <- getNodeSimilarity(D, "ksim", align, k.or.p)
-  if ("L2" %in% nodeModes)
+  if ("L2" %in% nodeModes){
     nodeSimilarity$L2Similarity <- getNodeSimilarity(D, "L2", align, scale)
+    names(nodeSimilarity)[names(nodeSimilarity)=="L2Similarity"] <- "L2Distance"
+  }
   return(c(edgeSimilarity, nodeSimilarity))
 }
 
