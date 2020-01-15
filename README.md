@@ -1,1 +1,1 @@
-# COGENT: Consistency of Gene Expression NeTworks
+# COGENT: COnsistency of Gene Expression NeTworks
