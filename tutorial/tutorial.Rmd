@@ -1,8 +1,14 @@
 ---
 title: "COGENT tutorial"
-output: 
+output:
+  html_document:
+    df_print: paged
+    toc: no
   html_notebook:
-    toc: false
+    toc: no
+  pdf_document:
+    fig_crop: no
+    toc: no
 ---
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. The .Rmd version of this file works like a Jupyter notebook -- you can either click *Run* on each code chunk, or *Ctrl+Shift+Enter* your way through.
@@ -11,15 +17,15 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. The .Rmd version
 
 If two genes have similar expression patterns, i.e. if their products appear in the cell at the same time, they are more likely to share a biological function. Such information is often captured by gene co-expression networks. In these, genes are represented by nodes, and pairs of genes which are highly co-expressed are linked by edges.
 
-There are a number of ways such networks can be built from gene expression data across multiple samples. The easiest might be to calculate a Pearson correlation coefficient between the expression profiles of every pair of genes, and then build edges where the correlations are high (say, take the tio 10% of values). Various choices of similarity metrics and thresholds are possible here, and there exist more complex network construction approaches. It is not always clear which to apply.
+There are a number of ways such networks can be built from gene expression data across multiple samples. The easiest might be to calculate a Pearson correlation coefficient between the expression profiles of every pair of genes, and then build edges where the correlations are high (say, take the top 10% of values). Various choices of similarity metrics and thresholds are possible here, and there exist more complex network construction approaches. It is not always clear which to apply.
 
-In order to help motivate data-driven approaches to network construction, we developed the `R` package **COGENT** (**C**onsistency of **G**ene **E**xpression **N**e**T**works). COGENT provides a suite of assessment tools for gene co-expression network construction. It can be used to choose between different network construction approaches, as well as to inform threshold choice. The main idea behind COGENT is that a good network construction function should produce similar networks when only a subset of the available expression samples are used. 
+In order to help motivate data-driven approaches to network construction, we developed the `R` package **COGENT** (**CO**nsistency of **G**ene **E**xpression **N**e**T**works). COGENT provides a suite of assessment tools for gene co-expression network construction. It can be used to choose between different network construction approaches, as well as to inform threshold choice. The main idea behind COGENT is that a good network construction function should produce similar networks when only a subset of the available expression samples are used. 
 
 ## Installation
 
 This tutorial will start by describing the type of data and functions COGENT is designed to handle. You will then learn how you can use COGENT to help choose between competing network construction methods, as well as to determine suitable thresholds.
 
-Before we begin, make sure you have a recent version of `R` (COGENT was built using `R 3.6.1`). COGENT is available on GitHub, and the easiest way to install it is through `devtools::install_github`, for which you may need to install `devtools` first. The script `installTutorialPackages.R` will check if you aalready have `devtools` as well as a number of other useful packages installed, and will install them for you if they're missing. It will also install COGENT itself. Alternatively, you can run the following:
+Before we begin, make sure you have a recent version of `R` (COGENT was built using `R 3.6.1`). COGENT is available on GitHub, and the easiest way to install it is through `devtools::install_github`, for which you may need to install `devtools` first. The script `installTutorialPackages.R` will check if you already have `devtools` as well as a number of other useful packages installed, and will install them for you if they're missing. It will also install COGENT itself. Alternatively, you can uncomment and run the following:
 
 ```{r results='hide'}
 # requiredPackages <- c("devtools",
@@ -67,7 +73,7 @@ checkExpressionDF(yeastData)
 
 For the purposes of COGENT, a network construction function is any function which maps a COGENT-compatible data frame as above to a network adjacency matrix. The networks can be weighted, but are assumed to be undirected. The weights, if present, should be non-negative.
 
-As meantioned above, perhaps the easiest way to build a co-expression network is by calculating Pearson correlation coefficients and thresholding. Here is a simple function, which will take the top 10% of correlation values.
+As mentioned above, perhaps the easiest way to build a co-expression network is by calculating Pearson correlation coefficients and thresholding. Here is a simple function, which will take the top 10% of correlation values.
 
 ```{r}
 buildPearson <- function(df, quant=0.90){
@@ -113,14 +119,14 @@ PKcomparison$nodeCount
 In this case, network comparison is carried over 172 genes. Some of these may have edges incident to them in only one of the two networks. The 28 genes which have no neighbours both in either the Pearson or the Kendall networks are excluded. A global similarity is then calculated in order to evaluate how similar the networks are.
 
 ```{r}
-pkEdgeComparison$globalSimilarity
+PKcomparison$globalSimilarity
 ```
 
 Global similarity takes values between 0 and 1, with 0 corresponding to no edge overlap and 1 corresponding to perfect overlap. Suppose we had two random networks, each with 200 nodes amd network density of 0.10. Their intersection would be roughly 200 edges, and their union would be roughly 4000 edges. This means we would expect a global similarity of around 200/4000=0.05 purely by chance. The observed value of 0.61 is clearly better than random (as we would hope!) even if the Pearson and Kendall networks differ considerably. 
 
 The global similarity is a single value measuring the agreement of the two networks. The local similarity measures the agreement across each gene neighbourhood. This can be useful if we want to know not only whether the networks are very different, but also where they differ.
 ```{r}
-hist(pkEdgeComparison$localSimilarity,
+hist(PKcomparison$localSimilarity,
      main="Local similarity between Pearson and Kendall networks",
      xlab="Similarity",
      breaks=seq(0, 1, .05), col="cornflowerblue")
@@ -160,23 +166,25 @@ x <- cogentSingle(df=yeastData, netwkFun=buildKendall, propShared=0.50,
 c("globalSimilarity"=x$globalSimilarity, "corDegrees"=x$corSimilarity)
 ```
 
-Notice the difference between the global similarity (0.56) and the degree similarity, measured by Pearson's correlation coefficients (0.93). While the generated random networks are considerably different, their degree sequences are very similar. If subsequent analysis will be based on the degrees, a relatively low global similarity may be unimportant. 
+Notice the difference between the global similarity (0.56) and the degree similarity, measured by Pearson's correlation coefficients (0.93). While the generated networks are considerably different, their degree sequences are very similar. If subsequent analysis will be based on the degrees, a relatively low global similarity may be unimportant. 
 
 The values above rely on random sampling. In order to understand better the consistency of each method, we can run the COGENT function multiple times and study the distribution of obtained similarities. The function `cogentLinear` does this and aggregates the results into a data frame.
 
 ```{r}
-stabilityPearson <- cogentLinear(df=yeastData, netwkFun=buildPearson, propShared=0.50, repCount=100,
-                              nodeFun=calculateDegrees, nodeModes="all",
-                              use="pairwise.complete.obs", method="pearson", k.or.p=0.10, scale=TRUE)
+stabilityPearson <- cogentLinear(df=yeastData, netwkFun=buildPearson, propShared=0.50,
+                                 repCount=100, nodeFun=calculateDegrees, nodeModes="all",
+                                 use="pairwise.complete.obs", method="pearson", 
+                                 k.or.p=0.10, scale=TRUE)
 head(stabilityPearson)
 ```
 
 Pearson correlations are not computationally demanding, so the above only takes a couple of seconds. However, Kendall correlations can take much longer to compute, especially with a larger set of genes. To speed the calculation up, we can parallelise using `cogentParallel()`. This can be particularly useful if your network construction method is slow but not itself easily parallelisable.
 
 ```{r}
-stabilityKendall <- cogentParallel(df=yeastData, netwkFun=buildKendall, propShared=0.50, repCount=100, 
-                                   threadCount=4, nodeFun=calculateDegrees, nodeModes="all",
-                                   use="pairwise.complete.obs", method="pearson", k.or.p=0.10, scale=TRUE)
+stabilityKendall <- cogentParallel(df=yeastData, netwkFun=buildKendall, propShared=0.50, 
+                                   repCount=100, threadCount=4, nodeFun=calculateDegrees, 
+                                   nodeModes="all", use="pairwise.complete.obs", 
+                                   method="pearson", k.or.p=0.10, scale=TRUE)
 head(stabilityKendall)
 ```
 
@@ -190,7 +198,7 @@ stabilityBoth <- rbind(
 ggplot(stabilityBoth, aes(x=method, y=globalSimilarity)) +
   theme_economist_white() +
   geom_boxplot() +
-  ggtitle("Stability of Pearson and Kendall correlation networks") +
+  ggtitle("Stability of Pearson and Kendall\ncorrelation networks") +
   scale_x_discrete("Method") +
   scale_y_continuous("Global similarity")
 ```
@@ -203,7 +211,7 @@ Above we saw that the degree sequences are potentially preserved much better tha
 ggplot(stabilityBoth, aes(x=method, y=corSimilarity)) +
   theme_economist_white() +
   geom_boxplot() +
-  ggtitle("Stability of Pearson and Kendall correlation networks") +
+  ggtitle("Stability of Pearson and Kendall\ncorrelation networks") +
   scale_x_discrete("Method") +
   scale_y_continuous("Degree consistency via correlations")
 ```
@@ -226,7 +234,7 @@ getThresholdStability <- function(th){
 }
 ```
 
-Again, we can apply it multiple times, say 100 each, at several thresholds. Here we parallelise explicitly. We threshold for network density between 0.01 and 0.30 at 0.01 intervals. This corresponds to quantiles of the correlation distribution between 0.70 and 0.99.
+Again, we can apply it multiple times, say 100 each, at several thresholds. Here we parallelise explicitly. We threshold for network density between 0.01 and 0.50 at 0.01 intervals. This corresponds to quantiles of the correlation distribution between 0.50 and 0.99.
 
 ```{r}
 aggregateThresholdStability <- function(th, repCount=100){
@@ -235,7 +243,7 @@ aggregateThresholdStability <- function(th, repCount=100){
   return(as.data.frame(cbind(thS, threshold=th)))
 }
 thresholds <- seq(0.5, 0.99, 0.01)
-thresholdComparisonDF <- mclapply(thresholds, aggregateThresholdStability, mc.cores=4)
+thresholdComparisonDF <- mclapply(thresholds, aggregateThresholdStability, mc.cores=6)
 thresholdComparisonDF <- do.call("rbind", thresholdComparisonDF)
 ```
 
@@ -243,7 +251,8 @@ Note that in this case it is quick to split the data and generate new correlatio
 
 We can now see how similarity changes with the threshold. We plot the network density, which is 1-threshold, versus the density-adjusted global similarity.
 ```{r}
-thresholdComparisonDF <- subset(thresholdComparisonDF, !is.na(thresholdComparisonDF$correctedSimilarity))
+thresholdComparisonDF <- subset(thresholdComparisonDF, 
+                                !is.na(thresholdComparisonDF$correctedSimilarity))
 ggplot(thresholdComparisonDF, aes(x=1-threshold, y=correctedSimilarity)) +
   geom_smooth() +
   theme_economist_white() +
@@ -258,5 +267,5 @@ We performed our original analysis at network density of 0.10, while a network o
 
 Above we have demonstrated two of the main applications of COGENT: choosing between different network building approaches and determining a threshold for the construction of gene co-expression networks. We showed that, for a toy data set, networks obtained from Pearson correlations outperform networks from Kendall correlations. Further, we demonstrated that a density of around 0.30 results in the most consistent Pearson correlation networks.
 
-In addition to gene expression data, COGENT can be readily applied to other types of data, where co-occurrence signifies a functional relationship of interest. This could, for example, include microbiote data, as well as discrete data, suchas syntehtic lethality screens.
+In addition to gene expression data, COGENT can be readily applied to other types of data, where co-occurrence signifies a functional relationship of interest. This could, for example, include microbiote data, as well as discrete data, such as syntehtic lethality screens.
 
