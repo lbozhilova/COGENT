@@ -9,6 +9,7 @@ output:
   html_document:
     df_print: paged
     toc: no
+urlcolor: blue
 ---
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) notebook. The .Rmd version of this file works like a Jupyter notebook -- you can either click *Run* on each code chunk, or *Ctrl+Shift+Enter* your way through. You can find different versions of this tutorial (.Rmd, .pdf and .html) as part of the COGENT package on [GitHub](https://github.com/lbozhilova/COGENT/tree/master/tutorial).
