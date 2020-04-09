@@ -19,6 +19,8 @@
 #'   shared across the two random split.
 #' @param align Logical; Whether to align the two outputs of \code{netwkFun}.
 #'   Only set to TRUE if \code{netwkFun()} doesn't preserve gene order.
+#' @param reduce Logical; Whether mutually isolated nodes should be handled 
+#'   separately. Default is TRUE.
 #' @param nodeModes Which modes of comparison to use for node metrics. This
 #'   should be either \code{"all"} or a subset of \{\code{"cor"}, \code{"ksim"},
 #'   \code{"L2"}\}. Ignored if \code{nodeFun=NULL}.
@@ -76,15 +78,16 @@
 #' cogentSingle(df, foo, fooNode, nodeModes=c("cor", "ksim"), method="spearman")
 #'
 #' @export
-cogentSingle <- function(df, netwkFun, nodeFun=NULL, propShared=0, align=FALSE, nodeModes="all",
-                         use="complete.obs", method="pearson", k.or.p=0.1, scale=FALSE){
+cogentSingle <- function(df, netwkFun, nodeFun=NULL, propShared=0, align=FALSE,
+                         reduce=TRUE, nodeModes="all", use="complete.obs", 
+                         method="pearson", k.or.p=0.1, scale=FALSE){
   check <- checkExpressionDF(df)
   check <- checkFun(netwkFun)
   dfList <- splitExpressionData(df, propShared)
   if (class(netwkFun)=="character")
     A <- lapply(dfList, function(x) do.call(netwkFun, list(x))) else
       A <- lapply(dfList, netwkFun)
-  edgeSimilarity <- getEdgeSimilarity(A, align)
+  edgeSimilarity <- getEdgeSimilarity(A, align, reduce)
   if (is.null(nodeFun))
     return(edgeSimilarity)
   check <- checkFun(nodeFun)
@@ -140,9 +143,9 @@ cogentSingle <- function(df, netwkFun, nodeFun=NULL, propShared=0, align=FALSE, 
 #'
 #' @export
 cogentLinear <- function(df, netwkFun, nodeFun=NULL, repCount=100,
-                         propShared=0, align=FALSE, nodeModes="all",
+                         propShared=0, align=FALSE, reduce=TRUE, nodeModes="all",
                          use="complete.obs", method="pearson", k.or.p=0.1, scale=FALSE){
-  repeatsList <- replicate(repCount, cogentSingle(df, netwkFun, nodeFun, propShared, align, nodeModes,
+  repeatsList <- replicate(repCount, cogentSingle(df, netwkFun, nodeFun, propShared, align, reduce, nodeModes,
                                                    use, method, k.or.p, scale), simplify=FALSE)
   repeatsDF <- do.call("rbind", repeatsList)
   repeatsDF[,"localSimilarity"] <- sapply(repeatsDF[,"localSimilarity"], mean)
@@ -186,9 +189,9 @@ cogentLinear <- function(df, netwkFun, nodeFun=NULL, repCount=100,
 #'
 #' @export
 cogentParallel <- function(df, netwkFun, nodeFun=NULL, repCount=100, threadCount=4,
-                           propShared=0, align=FALSE, nodeModes="all",
+                           propShared=0, align=FALSE, reduce=TRUE, nodeModes="all",
                            use="complete.obs", method="pearson", k.or.p=0.1, scale=FALSE){
-  repeatsList <- mclapply(1:repCount, function(x) cogentSingle(df, netwkFun, nodeFun, propShared, align, nodeModes,
+  repeatsList <- mclapply(1:repCount, function(x) cogentSingle(df, netwkFun, nodeFun, propShared, align, reduce, nodeModes,
                                                               use, method, k.or.p, scale),
                            mc.cores=threadCount, mc.cleanup=TRUE)
   repeatsDF <- do.call("rbind", repeatsList)

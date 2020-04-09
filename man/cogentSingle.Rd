@@ -4,9 +4,19 @@
 \alias{cogentSingle}
 \title{Single COGENT call}
 \usage{
-cogentSingle(df, netwkFun, nodeFun = NULL, propShared = 0,
-  align = FALSE, nodeModes = "all", use = "complete.obs",
-  method = "pearson", k.or.p = 0.1, scale = FALSE)
+cogentSingle(
+  df,
+  netwkFun,
+  nodeFun = NULL,
+  propShared = 0,
+  align = FALSE,
+  reduce = TRUE,
+  nodeModes = "all",
+  use = "complete.obs",
+  method = "pearson",
+  k.or.p = 0.1,
+  scale = FALSE
+)
 }
 \arguments{
 \item{df}{A COGENT-compatible data frame with rows corresponding to genes and
@@ -24,6 +34,9 @@ shared across the two random split.}
 
 \item{align}{Logical; Whether to align the two outputs of \code{netwkFun}.
 Only set to TRUE if \code{netwkFun()} doesn't preserve gene order.}
+
+\item{reduce}{Logical; Whether mutually isolated nodes should be handled 
+separately. Default is TRUE.}
 
 \item{nodeModes}{Which modes of comparison to use for node metrics. This
 should be either \code{"all"} or a subset of \{\code{"cor"}, \code{"ksim"},

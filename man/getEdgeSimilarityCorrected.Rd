@@ -4,14 +4,21 @@
 \alias{getEdgeSimilarityCorrected}
 \title{Get the edge similarity of two networks with configuration model correction}
 \usage{
-getEdgeSimilarityCorrected(A, align = FALSE, type = c("random",
-  "expected"))
+getEdgeSimilarityCorrected(
+  A,
+  align = FALSE,
+  reduce = TRUE,
+  type = c("random", "expected")
+)
 }
 \arguments{
 \item{A}{A list of two square \strong{unweighted} adjacency matrices.}
 
 \item{align}{Logical; Whether to align the two adjacency matrices. Only set
 to TRUE if this is not done automatically.}
+
+\item{reduce}{Logical; Whether mutually isolated nodes should be handled 
+separately. Default is TRUE.}
 
 \item{type}{How to do the correction: either by generating random networks
 from the configuartion model or by using expectations. Must be one of

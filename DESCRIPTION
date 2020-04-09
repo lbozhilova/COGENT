@@ -1,7 +1,7 @@
 Package: COGENT
 Type: Package
 Title: Consistency of gene expression networks
-Version: 0.1.0
+Version: 0.1.1
 Author: Lyuba V. Bozhilova
 Maintainer: Lyuba V. Bozhilova <lyubabozhilova@gmail.com>
 Description: Analysis of co-expression network construction algorithms.
@@ -14,6 +14,6 @@ Imports:
     Matrix (>= 1.2.17),
     parallel (>= 3.6.1),
     igraph (>= 1.2.4.1)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests: 
     testthat (>= 2.1.0)

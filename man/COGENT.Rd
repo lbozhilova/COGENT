@@ -3,7 +3,6 @@
 \docType{package}
 \name{COGENT}
 \alias{COGENT}
-\alias{COGENT-package}
 \title{COGENT: A package for evaluating the Consistency of Gene Expression NeTworks}
 \description{
 In a gene expression network nodes represent genes and edges typically

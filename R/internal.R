@@ -9,7 +9,7 @@
 #' \code{alignMatrices()} reduces two adjacency matrices to their common nodes
 #' and ordering them to match. The matrices can then be compared using different
 #' similarity measures. Note alignment is not always necessary, since many
-#' network construction algorithms will preserve the same node order across
+#' network construction methods will preserve the same node order across
 #' different runs.
 #'
 #' @param A A list of two square (weighted) adjacency matrices.

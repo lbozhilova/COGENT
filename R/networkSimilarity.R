@@ -11,6 +11,8 @@
 #' @param A A list of two square (weighted) adjacency matrices.
 #' @param align Logical; Whether to align the two adjacency matrices. Only set
 #'   to TRUE if this is not done automatically.
+#' @param reduce Logical; Whether mutually isolated nodes should be handled 
+#'   separately. Default is TRUE.
 #'
 #' @return The result is a list of similarity measures of the two networks with
 #'   adjacency matrices in \code{A}. This includes:
@@ -34,7 +36,7 @@
 #' getEdgeSimilarity(list(A1, A2), align=TRUE)
 #'
 #' @export
-getEdgeSimilarity <- function(A, align=FALSE){
+getEdgeSimilarity <- function(A, align=FALSE, reduce=TRUE){
   check <- checkMatrixList(A)
   if (align){
     A <- alignMatrices(A)
@@ -51,6 +53,8 @@ getEdgeSimilarity <- function(A, align=FALSE){
   unionMatrix <- pmax(A1, A2)
   unionDegrees <- rowSums(unionMatrix)
   isolatedNodesIdx <- which(unionDegrees==0)
+  if (!reduce)
+    isolaredNodesIdx <- c()
   nodeLabels <- colnames(A1)
   nodeCount <- ncol(A1)
   if (length(isolatedNodesIdx)!=0){
@@ -173,7 +177,8 @@ getNodeSimilarity <- function(D, mode=c("cor", "ksim", "L2"), align=FALSE, ...){
 #' getEdgeSimilarityCorrected(list(A1, A2), align=TRUE, type="expected")
 #'
 #' @export
-getEdgeSimilarityCorrected <- function(A, align=FALSE, type=c("random", "expected")){
+getEdgeSimilarityCorrected <- function(A, align=FALSE, reduce=TRUE,
+                                       type=c("random", "expected")){
   check <- checkMatrixList(A)
   if (align){
     A <- alignMatrices(A)
@@ -190,6 +195,8 @@ getEdgeSimilarityCorrected <- function(A, align=FALSE, type=c("random", "expecte
   unionMatrix <- 1*((A1+A2)>0)
   unionDegrees <- rowSums(unionMatrix)
   isolatedNodesIdx <- which(unionDegrees==0)
+  if (!reduce)
+    isolaredNodesIdx <- c()
   nodeLabels <- colnames(A1)
   nodeCount <- ncol(A1)
   if (length(isolatedNodesIdx)!=0){

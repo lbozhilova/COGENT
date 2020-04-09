@@ -4,13 +4,16 @@
 \alias{getEdgeSimilarity}
 \title{Get the edge similarity for two networks}
 \usage{
-getEdgeSimilarity(A, align = FALSE)
+getEdgeSimilarity(A, align = FALSE, reduce = TRUE)
 }
 \arguments{
 \item{A}{A list of two square (weighted) adjacency matrices.}
 
 \item{align}{Logical; Whether to align the two adjacency matrices. Only set
 to TRUE if this is not done automatically.}
+
+\item{reduce}{Logical; Whether mutually isolated nodes should be handled 
+separately. Default is TRUE.}
 }
 \value{
 The result is a list of similarity measures of the two networks with
