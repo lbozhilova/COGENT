@@ -54,7 +54,7 @@ getEdgeSimilarity <- function(A, align=FALSE, reduce=TRUE){
   unionDegrees <- rowSums(unionMatrix)
   isolatedNodesIdx <- which(unionDegrees==0)
   if (!reduce)
-    isolaredNodesIdx <- c()
+    isolatedNodesIdx <- c()
   nodeLabels <- colnames(A1)
   nodeCount <- ncol(A1)
   if (length(isolatedNodesIdx)!=0){
@@ -196,7 +196,7 @@ getEdgeSimilarityCorrected <- function(A, align=FALSE, reduce=TRUE,
   unionDegrees <- rowSums(unionMatrix)
   isolatedNodesIdx <- which(unionDegrees==0)
   if (!reduce)
-    isolaredNodesIdx <- c()
+    isolatedNodesIdx <- c()
   nodeLabels <- colnames(A1)
   nodeCount <- ncol(A1)
   if (length(isolatedNodesIdx)!=0){
