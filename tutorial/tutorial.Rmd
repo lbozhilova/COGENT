@@ -1,13 +1,13 @@
 ---
 title: "COGENT tutorial"
 output:
-  pdf_document:
-    fig_crop: no
+  html_document:
+    df_print: paged
     toc: no
   html_notebook:
     toc: no
-  html_document:
-    df_print: paged
+  pdf_document:
+    fig_crop: no
     toc: no
 urlcolor: blue
 ---
@@ -72,7 +72,7 @@ As mentioned earlier, one way to build a co-expression network is by calculating
 buildPearson <- function(df, quant=0.90){
   check <- checkExpressionDF(df)
   A <- cor(t(df[,colnames(df)!="Name"]), use="pairwise.complete.obs", method="pearson")
-  threshold <- quantile(A, quant, na.rm=TRUE)
+  threshold <- quantile(A[upper.tri(A)], quant, na.rm=TRUE)
   A <- 1*(A>=threshold); diag(A) <- 0
   colnames(A) <- rownames(A) <- df$Name
   return(A)
@@ -86,7 +86,7 @@ Notice that rather than imposing a threshold on the raw correlation values (e.g.
 buildKendall<- function(df, quant=0.90){
   check <- checkExpressionDF(df)
   A <- cor(t(df[,colnames(df)!="Name"]), use="pairwise.complete.obs", method="kendall")
-  threshold <- quantile(A, quant, na.rm=TRUE)
+  threshold <- quantile(A[upper.tri(A)], quant, na.rm=TRUE)
   A <- 1*(A>=threshold); diag(A) <- 0
   colnames(A) <- rownames(A) <- df$Name
   return(A)
@@ -115,7 +115,7 @@ In this case, network comparison is carried over 172 genes. Some of these may ha
 PKcomparison$globalSimilarity
 ```
 
-Global similarity takes values between zero and one, with zero corresponding to no edge overlap and one corresponding to perfect overlap. Suppose we had two random networks, each with $200$ nodes and network density of $0.10$. On average, their intersection would be roughly $200$ edges, and their union would be roughly $3800$ edges. This means we would expect a global similarity of around $200/3800 \approx 0.05$ purely by chance. The observed value of 0.61 is clearly higher than random (as we would hope!) even if the Pearson and Kendall networks differ considerably. 
+Global similarity takes values between zero and one, with zero corresponding to no edge overlap and one corresponding to perfect overlap. Suppose we had two random networks, each with $200$ nodes and network density of $0.10$. On average, their intersection would be roughly $200$ edges, and their union would be roughly $3800$ edges. This means we would expect a global similarity of around $200/3800 \approx 0.05$ purely by chance. The observed value of 0.62 is clearly higher than random (as we would hope!) even if the Pearson and Kendall networks differ considerably. 
 
 The global similarity is a single value measuring the agreement of the two networks. The local similarity measures the agreement across each gene neighbourhood. This can be useful if we want to know not only whether the networks are very different, but also where they differ.
 ```{r}
@@ -125,7 +125,7 @@ hist(PKcomparison$localSimilarity,
      breaks=seq(0, 1, .05), col="cornflowerblue")
 ```
 
-For the local similarity between these two networks, a set of low-degree nodes accounts for the peaks at 0 and 1. Even disregarding these nodes, the local similarity distribution is still rather broad (mean 0.58 and standard deviation 0.17 after removing extreme values). If we had a gene set of interest, we could inspect it in more detail at this stage.
+For the local similarity between these two networks, a set of low-degree nodes accounts for the peaks at 0 and 1. Even disregarding these nodes, the local similarity distribution is still rather broad (mean 0.58 and standard deviation 0.18 after removing extreme values). If we had a gene set of interest, we could inspect it in more detail at this stage.
 
 Our initial inspection shows that while the Pearson and Kendall networks overlap, their differences are far from non-negligible. A natural question to then ask is which of the two should be prioritised for downstream analysis.
 
@@ -214,7 +214,7 @@ ggplot(stabilityBoth, aes(x=method, y=corSimilarity)) +
 
 There are two things to notice on this plot. One is that both methods produce overwhelmingly similar degree sequences under subsampling (values are around 0.90). The other is that the Pearson network still outperforms the Kendall one, even if less convincingly.
 
-Overall, we've found that the Pearson correlation network construction method performs slightly better in terms of consistency (measured both as global similarity and in terms of degree sequences) than the Kendall correlation one **for this data set**. But when we first started, we imposed an arbitrary threshold for the network density. We can also use COGENT to help inform treshold choice.
+Overall, we have found that the Pearson correlation network construction method performs slightly better in terms of consistency (measured both as global similarity and in terms of degree sequences) than the Kendall correlation one **for this data set**. But when we first started, we imposed an arbitrary threshold for the network density. We can also use COGENT to help inform treshold choice.
 
 ## Choosing a threshold
 
@@ -247,7 +247,7 @@ thresholdComparisonDF <- do.call("rbind", thresholdComparisonDF)
 
 Note that in this case it is quick to split the data and generate new correlation networks at every threshold. If the calculation is slower (e.g. if we use Kendall correlations instead), we may want to do the split 100 times overall, and then simply threshold the same scored networks at the desired values. 
 
-We can now see how similarity changes with the threshold. We plot the network density, which is 1-threshold, versus the density-adjusted global similarity.
+We can now see how similarity changes with the threshold. We plot the network density, which is calculated as 1-threshold, versus the density-adjusted global similarity.
 ```{r}
 thresholdComparisonDF <- subset(thresholdComparisonDF, 
                                 !is.na(thresholdComparisonDF$correctedSimilarity))

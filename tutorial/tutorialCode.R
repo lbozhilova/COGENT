@@ -26,7 +26,7 @@ checkExpressionDF(yeastData)
 buildPearson <- function(df, quant=0.90){
    check <- checkExpressionDF(df)
    A <- cor(t(df[,colnames(df)!="Name"]), use="pairwise.complete.obs", method="pearson")
-   threshold <- quantile(A, quant, na.rm=TRUE)
+   threshold <- quantile(A[upper.tri(A)], quant, na.rm=TRUE)
    A <- 1*(A>=threshold); diag(A) <- 0
    colnames(A) <- rownames(A) <- df$Name
    return(A)
@@ -37,7 +37,7 @@ pearsonA <- buildPearson(yeastData)
 buildKendall<- function(df, quant=0.90){
    check <- checkExpressionDF(df)
    A <- cor(t(df[,colnames(df)!="Name"]), use="pairwise.complete.obs", method="kendall")
-   threshold <- quantile(A, quant, na.rm=TRUE)
+   threshold <- quantile(A[upper.tri(A)], quant, na.rm=TRUE)
    A <- 1*(A>=threshold); diag(A) <- 0
    colnames(A) <- rownames(A) <- df$Name
    return(A)
