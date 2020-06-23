@@ -16,7 +16,13 @@ The main COGENT functions - `cogentSingle()`, `cogentLinear()` and `cogentParall
 For details on what consistency measures are available within COGENT, and how these are calculated, please refer to [the tutorial](https://lbozhilova.github.io/COGENT/tutorial/tutorial.html), which contains a fully worked example and commentary.
 
 ## Reference
-Nothing to see here... yet.
+If you use COGENT in your work, please cite us:
+
+Bozhilova, L.V., Pardo-Diaz, J., Reinert, G. & Deane, C.M. [_COGENT: evaluating the consistency of gene co-expression networks_](https://www.biorxiv.org/content/10.1101/2020.06.21.163535v1) bioRxiv, 2020.
+
+For an application of COGENT, refer to:
+
+Pardo-Diaz, J., Bozhilova, L.V., Beguerisse-Diaz, M., Poole, P.S., Deane, C.M. & Reinert, G. [_Robust gene coexpression networks using signed distance correlation_](https://www.biorxiv.org/content/10.1101/2020.06.21.163543v1) bioRxiv, 2020.
 
 ## Updates
 Nothing to see here... yet.
