@@ -2,7 +2,7 @@
 ##### COGENT tutorial data #####
 ################################
 
-# First make sure you have installed and unzipped the data. You can find it here:
+# First make sure you have downloaded and unzipped the data. You can find it here:
 # https://www.ebi.ac.uk/gxa/experiments/E-MTAB-5174/Downloads
 
 # Parse the data
