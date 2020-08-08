@@ -17,7 +17,7 @@ For more detailed instructions please refer to the [tutorial](https://lbozhilova
 
 ## Which R version do I need?
 
-COGENT is compatible with R v.3.6.2 and above. However, we recommend always using the most recent version of R and regularly updating your packages.
+COGENT is compatible with R v.3.6.2 and above. However, we recommend always using the most recent version of R (R v.4.0.2 at the time of writing) and regularly updating your packages.
 
 ## Does COGENT work on all operating systems?
 
@@ -41,13 +41,13 @@ We generally recommend using COGENT with the default value of `repCount=100` ite
 
 Density correction, also known as density adjustment, is introduced in the  `getEdgeSimilarityCorrected()` function. It can be used to compare network construction methods which result in networks of significantly different density.
 
-You should always use density correction if you are trying to find an optimal threshold for network construction, i.e. if you are trying to determine score cut-offs using COGENT. The [tutorial](https://lbozhilova.github.io/COGENT/tutorial/tutorial.html) contains a worked example of this.
+We recommend that you always use density correction if you are trying to find an optimal threshold for network construction, i.e. if you are trying to determine score cut-offs using COGENT. The [tutorial](https://lbozhilova.github.io/COGENT/tutorial/tutorial.html) contains a worked example of this.
 
-You should also use density correction when comparing two network construction methods which are not guaranteed to result in networks of similar density.
+We also recommend you use density correction when comparing two network construction methods which are not guaranteed to result in networks of similar density.
 
-You do not need to use density correction if you are using node metric consistency as your primary consistency measure. In this case, you should ensure your node metric of choice is density-independent.
+You do not need to use density correction if you are using node metric consistency as your primary consistency measure. In this case, it is important that your node metric of choice is independent of network density.
 
-You should not use density correction for methods resulting in signed and/or weighted networks.
+We recommend that you do not use density correction for methods resulting in signed and/or weighted networks.
 
 ## Which density correction should I use?
 
@@ -69,4 +69,4 @@ You can also use node metric consistency, either through the main COGENT functio
 
 Please feel free to contact us with any questions by emailing Charlotte Deane at <deane@stats.ox.ac.uk>.
 
-COGENT was originally developed and is currently maintained by Lyuba. You can email her directly at <lyubabozhilova@gmail.com>.
+COGENT was originally developed and is currently maintained by Lyuba Bozhilova. You can email her directly at <lyubabozhilova@gmail.com>.
